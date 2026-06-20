@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charyu — Agent Contenu IA</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --void:#08090A;
+  --deep:#111215;
+  --surface:#16181C;
+  --border:#252830;
+  --muted:#555B68;
+  --text:#D8DCE8;
+  --light:#F0F2F8;
+  --gold:#C9A84C;
+  --gold-dim:#8A6A28;
+  --glow:rgba(201,168,76,0.12);
+}
+
+body{
+  background:var(--void);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-weight:300;
+  min-height:100vh;
+}
+
+/* ── HEADER ── */
+header{
+  background:var(--deep);
+  border-bottom:1px solid var(--border);
+  padding:18px 32px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.logo{
+  display:flex;align-items:center;gap:14px;
+}
+.logo-mark{
+  width:36px;height:36px;border-radius:8px;
+  background:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;
+  font-size:1rem;font-weight:700;color:var(--void);
+  letter-spacing:-0.02em;
+}
+.logo-text{
+  font-family:'Playfair Display',serif;
+  font-size:1.05rem;font-weight:700;
+  color:var(--light);
+  letter-spacing:0.04em;
+}
+.logo-sub{
+  font-size:0.65rem;color:var(--muted);
+  letter-spacing:0.12em;text-transform:uppercase;
+  margin-top:1px;
+}
+.header-right{
+  text-align:right;
+  font-size:0.7rem;color:var(--muted);
+  letter-spacing:0.06em;text-transform:uppercase;
+  line-height:1.7;
+}
+.header-right span{color:var(--gold);}
+
+/* ── LAYOUT ── */
+.wrap{max-width:920px;margin:0 auto;padding:48px 24px 100px;}
+
+/* ── HERO ── */
+.hero{margin-bottom:48px;}
+.hero-eyebrow{
+  font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+.hero-eyebrow::before{
+  content:'';display:block;width:28px;height:1px;background:var(--gold);
+}
+.hero h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.9rem,4vw,2.8rem);
+  font-weight:700;line-height:1.15;
+  color:var(--light);
+  margin-bottom:14px;
+}
+.hero h2 em{
+  font-style:italic;color:var(--gold);
+}
+.hero p{
+  font-size:0.9rem;line-height:1.7;
+  color:var(--muted);max-width:500px;
+}
+
+/* ── CONTROLS ── */
+.panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px 32px;
+  margin-bottom:24px;
+}
+.panel-title{
+  font-size:0.68rem;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:22px;
+  display:flex;align-items:center;gap:8px;
+}
+.panel-title::before{content:'◆';font-size:0.5rem;}
+
+label{
+  display:block;
+  font-size:0.67rem;text-transform:uppercase;letter-spacing:0.1em;
+  color:var(--muted);margin-bottom:7px;font-weight:500;
+}
+select,textarea{
+  width:100%;
+  background:var(--deep);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px 14px;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.88rem;color:var(--text);
+  outline:none;transition:border-color .2s;
+  margin-bottom:20px;
+}
+select:focus,textarea:focus{border-color:var(--gold);}
+textarea{resize:vertical;min-height:80px;}
+
+/* idea selector */
+.idea-selector{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  margin-bottom:20px;
+}
+@media(max-width:580px){.idea-selector{grid-template-columns:1fr;}}
+.idea-chip{
+  background:var(--deep);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;
+  font-size:0.82rem;color:var(--muted);
+  cursor:pointer;transition:all .2s;
+  text-align:left;line-height:1.4;
+  font-family:'DM Sans',sans-serif;
+}
+.idea-chip:hover,.idea-chip.sel{
+  border-color:var(--gold);color:var(--light);
+  background:var(--glow);
+}
+.idea-chip .chip-icon{font-size:1rem;margin-bottom:5px;display:block;}
+
+/* row */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:560px){.row2{grid-template-columns:1fr;}}
+
+/* btn */
+.btn-main{
+  width:100%;
+  background:var(--gold);color:var(--void);
+  border:none;border-radius:12px;padding:16px;
+  font-family:'Playfair Display',serif;font-weight:700;
+  font-size:1rem;letter-spacing:0.03em;
+  cursor:pointer;transition:opacity .2s,transform .1s;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-top:4px;
+}
+.btn-main:hover{opacity:.88;}
+.btn-main:active{transform:scale(.98);}
+.btn-main:disabled{opacity:.35;cursor:not-allowed;}
+
+/* ── LOADER ── */
+.loader-wrap{
+  display:none;background:var(--surface);
+  border:1px solid var(--border);border-radius:16px;
+  padding:44px 32px;text-align:center;margin-bottom:24px;
+}
+.loader-wrap.active{display:block;}
+.loader-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.05rem;color:var(--light);margin-bottom:4px;
+}
+.loader-sub{font-size:0.8rem;color:var(--muted);margin-bottom:28px;}
+.steps{list-style:none;max-width:380px;margin:0 auto;text-align:left;}
+.steps li{
+  font-size:0.83rem;color:var(--muted);
+  padding:8px 0 8px 30px;position:relative;
+  transition:color .3s;border-bottom:1px solid var(--border);
+}
+.steps li:last-child{border-bottom:none;}
+.steps li::before{
+  content:'○';position:absolute;left:0;
+  color:var(--border);transition:color .3s;
+}
+.steps li.done{color:var(--text);}
+.steps li.done::before{content:'✓';color:var(--gold);}
+.steps li.cur{color:var(--light);font-weight:500;}
+.steps li.cur::before{content:'◈';color:var(--gold);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ── RESULTS ── */
+#results{display:none;}
+#results.active{display:block;}
+
+/* IDEA CARD (x3) */
+.ideas-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  margin-bottom:24px;
+}
+@media(max-width:660px){.ideas-grid{grid-template-columns:1fr;}}
+.idea-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:20px;cursor:pointer;
+  transition:border-color .2s,background .2s;
+}
+.idea-card:hover,.idea-card.active-idea{
+  border-color:var(--gold);background:var(--glow);
+}
+.idea-number{
+  font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:10px;font-weight:500;
+}
+.idea-title{
+  font-family:'Playfair Display',serif;
+  font-size:0.95rem;color:var(--light);
+  margin-bottom:8px;line-height:1.3;
+}
+.idea-desc{font-size:0.78rem;color:var(--muted);line-height:1.55;}
+
+/* SECTION CARDS */
+.scard{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:26px 28px;margin-bottom:18px;
+}
+.scard-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;
+}
+.scard-label{
+  font-size:0.67rem;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--gold);display:flex;align-items:center;gap:8px;
+}
+.scard-label::before{content:'◆';font-size:0.42rem;}
+
+/* copy btn */
+.cbtn{
+  background:none;border:1px solid var(--border);
+  border-radius:7px;padding:5px 12px;
+  font-size:0.7rem;color:var(--muted);
+  font-family:'DM Sans',sans-serif;letter-spacing:0.05em;
+  text-transform:uppercase;cursor:pointer;transition:all .2s;
+}
+.cbtn:hover{border-color:var(--gold);color:var(--light);}
+.cbtn.ok{border-color:var(--gold);color:var(--gold);background:var(--glow);}
+
+/* text blocks */
+.tblock{
+  background:var(--deep);border-radius:10px;
+  padding:16px 18px;font-size:0.87rem;
+  line-height:1.75;color:var(--text);
+  white-space:pre-wrap;word-break:break-word;
+}
+.tblock.prompt{
+  font-family:monospace;font-size:0.8rem;
+  color:var(--gold);background:#0B0C0E;
+  border:1px solid var(--gold-dim);
+}
+
+/* tabs */
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.tab{
+  border:1px solid var(--border);background:var(--deep);
+  border-radius:8px;padding:8px 16px;
+  font-size:0.78rem;font-weight:500;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  display:flex;align-items:center;gap:7px;
+  transition:all .2s;color:var(--muted);
+}
+.tab.on{background:var(--gold);color:var(--void);border-color:var(--gold);font-weight:600;}
+.platdot{width:7px;height:7px;border-radius:50%;}
+.pc{display:none;}
+.pc.on{display:block;}
+
+/* hashtags */
+.hcloud{display:flex;flex-wrap:wrap;gap:7px;margin-top:2px;}
+.htag{
+  background:var(--deep);border:1px solid var(--border);
+  border-radius:20px;padding:5px 13px;
+  font-size:0.76rem;color:var(--text);
+}
+
+/* quality */
+.qrow{display:flex;align-items:flex-start;gap:18px;margin-top:4px;}
+.qscore{
+  min-width:60px;height:60px;border-radius:12px;
+  background:var(--gold);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  font-family:'Playfair Display',serif;font-weight:700;
+  font-size:1.1rem;color:var(--void);
+  flex-shrink:0;
+}
+.qscore small{font-size:0.55rem;font-family:'DM Sans',sans-serif;font-weight:500;}
+.qtext{font-size:0.84rem;color:var(--muted);line-height:1.65;}
+.qtext strong{color:var(--text);font-weight:500;}
+
+/* timing */
+.timing-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--glow);border:1px solid var(--gold-dim);
+  border-radius:20px;padding:8px 16px;
+  font-size:0.82rem;color:var(--gold);
+  margin-bottom:12px;
+}
+
+/* voiceover */
+.vo-block{
+  background:var(--deep);border-left:3px solid var(--gold);
+  border-radius:0 10px 10px 0;
+  padding:16px 18px;font-size:0.87rem;
+  line-height:1.8;color:var(--text);
+  font-style:italic;white-space:pre-wrap;
+}
+
+/* charyu mention */
+.charyu-block{
+  background:var(--glow);border:1px solid var(--gold-dim);
+  border-radius:10px;padding:16px 18px;
+  font-size:0.87rem;line-height:1.7;color:var(--text);
+  white-space:pre-wrap;
+}
+
+/* regen */
+.btn-regen{
+  background:none;border:1px solid var(--border);
+  border-radius:10px;padding:12px 22px;
+  font-family:'Playfair Display',serif;font-weight:700;
+  font-size:0.88rem;cursor:pointer;
+  display:inline-flex;align-items:center;gap:9px;
+  transition:all .2s;color:var(--text);margin-top:6px;
+}
+.btn-regen:hover{border-color:var(--gold);color:var(--gold);}
+
+/* error */
+.err{
+  display:none;background:#1C0D0D;border:1px solid #4A1515;
+  border-radius:12px;padding:18px 22px;
+  font-size:0.86rem;color:#E07070;margin-bottom:20px;
+}
+.err.active{display:block;}
+
+hr.div{border:none;border-top:1px solid var(--border);margin:6px 0 18px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">C</div>
+    <div>
+      <div class="logo-text">Charyu</div>
+      <div class="logo-sub">Agent Contenu IA</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div id="todayDate">—</div>
+    <div>by <span>Edy Medvie</span></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Création IA haut de gamme</div>
+    <h2>Votre contenu du jour,<br><em>pensé, rédigé, prêt.</em></h2>
+    <p>Choisissez votre focus du jour. L'agent génère 3 idées visuelles originales avec prompts, légendes, voix off, timing de publication et mise en avant naturelle de Charyu.</p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Configuration du jour</div>
+
+    <label>Focus créatif</label>
+    <div class="idea-selector">
+      <button class="idea-chip sel" id="chip0" onclick="selectChip(0)">
+        <span class="chip-icon">🎨</span>
+        Libre — l'agent choisit
+      </button>
+      <button class="idea-chip" id="chip1" onclick="selectChip(1)">
+        <span class="chip-icon">👤</span>
+        Portrait photoréaliste
+      </button>
+      <button class="idea-chip" id="chip2" onclick="selectChip(2)">
+        <span class="chip-icon">📢</span>
+        Affiche publicitaire IA
+      </button>
+      <button class="idea-chip" id="chip3" onclick="selectChip(3)">
+        <span class="chip-icon">✨</span>
+        Visuel inspirant / citation
+      </button>
+      <button class="idea-chip" id="chip4" onclick="selectChip(4)">
+        <span class="chip-icon">🛍️</span>
+        Mise en avant Charyu
+      </button>
+      <button class="idea-chip" id="chip5" onclick="selectChip(5)">
+        <span class="chip-icon">🌐</span>
+        Marketing / branding IA
+      </button>
+    </div>
+
+    <div class="row2">
+      <div>
+        <label>Tonalité du contenu</label>
+        <select id="tonality">
+          <option value="professionnel, inspirant, premium">Professionnel & Inspirant</option>
+          <option value="créatif, avant-gardiste, audacieux">Créatif & Avant-gardiste</option>
+          <option value="éducatif, expert, clair">Éducatif & Expert</option>
+          <option value="chaleureux, humain, authentique">Chaleureux & Authentique</option>
+          <option value="minimaliste, élégant, épuré">Minimaliste & Élégant</option>
+        </select>
+      </div>
+      <div>
+        <label>Plateforme prioritaire</label>
+        <select id="priority">
+          <option value="Facebook">Facebook</option>
+          <option value="TikTok">TikTok</option>
+          <option value="YouTube Shorts">YouTube Shorts</option>
+          <option value="toutes les plateformes également">Toutes également</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Message ou contrainte du jour (optionnel)</label>
+    <textarea id="context" placeholder="Ex : Je veux promouvoir un portrait IA femme en lumière dorée pour ma nouvelle collection. Ou : aujourd'hui je parle de la puissance créative de l'IA sans montrer un outil précis."></textarea>
+
+    <button class="btn-main" id="genBtn" onclick="run()">
+      <span>◆</span> Générer le contenu du jour
+    </button>
+  </div>
+
+  <div class="err" id="errBox"></div>
+
+  <div class="loader-wrap" id="loader">
+    <div class="loader-title">L'agent Charyu travaille…</div>
+    <div class="loader-sub">Chaque étape est contrôlée avant d'avancer.</div>
+    <ul class="steps" id="stepsList">
+      <li id="s1">Analyse du brief & direction créative</li>
+      <li id="s2">Génération de 3 idées visuelles originales</li>
+      <li id="s3">Prompts ultra-détaillés (Midjourney / DALL·E / Flux)</li>
+      <li id="s4">Légendes Facebook · TikTok · YouTube + Voix off</li>
+      <li id="s5">Timing, mise en avant Charyu & vérification qualité</li>
+    </ul>
+  </div>
+
+  <div id="results">
+
+    <!-- 3 IDEAS -->
+    <div class="scard">
+      <div class="scard-head">
+        <div class="scard-label">3 Idées visuelles du jour</div>
+        <span style="font-size:0.72rem;color:var(--muted)">Cliquez pour explorer chaque idée</span>
+      </div>
+      <div class="ideas-grid" id="ideasGrid"></div>
+    </div>
+
+    <!-- SELECTED IDEA DETAIL (tabs by idea) -->
+    <div id="ideasDetail"></div>
+
+  </div>
+</div>
+
+<script>
+// DATE
+const now = new Date();
+document.getElementById('todayDate').textContent = now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+const CHIPS = ['','Portrait photoréaliste','Affiche publicitaire IA','Visuel inspirant / citation','Mise en avant Charyu','Marketing / branding IA'];
+let selectedChip = 0;
+let platformTexts = [{},{},{}];
+let currentIdea = 0;
+let parsedData = null;
+
+function selectChip(i){
+  document.querySelectorAll('.idea-chip').forEach((c,idx)=>{
+    c.classList.toggle('sel', idx===i);
+  });
+  selectedChip = i;
+}
+
+function setStep(n){
+  for(let i=1;i<=5;i++){
+    const el=document.getElementById('s'+i);
+    el.className = i<n?'done':i===n?'cur':'';
+  }
+}
+
+function showErr(msg){
+  const b=document.getElementById('errBox');
+  b.textContent='⚠ '+msg;
+  b.classList.add('active');
+  document.getElementById('loader').classList.remove('active');
+  document.getElementById('genBtn').disabled=false;
+}
+
+function copy(txt, btn){
+  navigator.clipboard.writeText(txt).then(()=>{
+    btn.textContent='✓ Copié';btn.classList.add('ok');
+    setTimeout(()=>{btn.textContent='Copier';btn.classList.remove('ok');},1800);
+  });
+}
+
+function switchTab(plat, btn, prefix, idx){
+  document.querySelectorAll('.tab[data-group="'+prefix+'"]').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.pc[data-group="'+prefix+'"]').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(prefix+'-'+plat).classList.add('on');
+}
+
+async function run(){
+  const focus = selectedChip===0 ? 'libre (choisir 3 angles créatifs distincts et tendance)' : CHIPS[selectedChip];
+  const tone = document.getElementById('tonality').value;
+  const priority = document.getElementById('priority').value;
+  const ctx = document.getElementById('context').value.trim();
+
+  document.getElementById('errBox').classList.remove('active');
+  document.getElementById('results').classList.remove('active');
+  document.getElementById('loader').classList.add('active');
+  document.getElementById('genBtn').disabled=true;
+  setStep(1);
+
+  const date = now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  const SYSTEM = `Tu es le directeur créatif de la marque Charyu, fondée par Edy Medvie, spécialisée en création d'images IA haut de gamme : portraits photoréalistes, affiches publicitaires, visuels marketing et contenu inspirant.
+
+Ton rôle : produire chaque jour un plan de contenu complet, précis et professionnel pour Facebook, TikTok et YouTube Shorts.
+
+Règles impératives :
+- Aucune promesse exagérée. Ton direct, concret, moderne.
+- Les légendes Facebook ont un hook fort (première ligne accrocheuse), pas de "achetez maintenant", call-to-action subtil.
+- TikTok : court, viral, direct, emojis expressifs mais pas excessifs.
+- YouTube Shorts : titre en MAJUSCULES ligne 1, description courte, appel à s'abonner naturel.
+- Voix off : 30-60 secondes, style documentaire inspirant, pas de script publicitaire.
+- Charyu est mentionné naturellement, jamais de manière intrusive.
+- Les prompts image sont en ANGLAIS, ultra-détaillés (min 90 mots), avec style artistique, lighting, mood, color palette, composition, quality tags.
+
+Tu réponds UNIQUEMENT en JSON valide, sans backticks ni markdown. Structure exacte :
+{
+  "ideas": [
+    {
+      "title": "Titre court de l'idée (5-7 mots)",
+      "tagline": "Accroche créative en 1 ligne",
+      "description": "Description de l'idée visuelle en 2-3 phrases, angle créatif, ce qu'on voit",
+      "prompt": "Prompt image IA ultra-détaillé en anglais (min 90 mots)",
+      "facebook": "Légende Facebook complète (8-12 lignes, hook fort, storytelling, questions, CTA subtil)",
+      "tiktok": "Version TikTok (hook ligne 1, max 120 mots, emojis, CTA fort)",
+      "youtube": "Version YouTube Shorts (TITRE EN MAJUSCULES ligne 1, description 60-80 mots, CTA abonnement naturel)",
+      "hashtags": ["#tag1","#tag2","#tag3","#tag4","#tag5","#tag6","#tag7","#tag8","#tag9","#tag10","#tag11","#tag12"],
+      "voiceover": "Script voix off 30-60 secondes, style inspirant documentaire, naturel",
+      "timing": "Meilleur moment de publication avec justification courte",
+      "charyu_mention": "Suggestion naturelle pour mentionner Charyu / Edy Medvie dans ce contenu sans faire de publicité agressive"
+    },
+    { ... },
+    { ... }
+  ],
+  "quality": {
+    "score": 91,
+    "analysis": "Analyse qualité globale : forces du plan, cohérence entre les 3 idées, conseil d'optimisation"
+  }
+}`;
+
+  const USER = `Date : ${date}
+Focus créatif : ${focus}
+Tonalité : ${tone}
+Plateforme prioritaire : ${priority}
+Contexte / précisions : ${ctx || 'Aucun contexte particulier, sois créatif et tend vers les contenus visuels qui performent en ce moment.'}
+
+Génère le plan de contenu complet pour aujourd'hui.`;
+
+  try {
+    let si=0;
+    const iv=setInterval(()=>{ si++; if(si<5) setStep(si+1); },2400);
+
+    const res = await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:1000,
+        system:SYSTEM,
+        messages:[{role:"user",content:USER}]
+      })
+    });
+
+    clearInterval(iv);
+    setStep(5);
+
+    if(!res.ok){
+      const e=await res.json();
+      throw new Error(e.error?.message||'Erreur API');
+    }
+
+    const data=await res.json();
+    const raw=data.content.map(b=>b.text||'').join('');
+    const clean=raw.replace(/```json|```/g,'').trim();
+    parsedData=JSON.parse(clean);
+
+    setTimeout(()=>render(parsedData),500);
+  } catch(e){
+    showErr('Erreur : '+e.message+'. Vérifiez votre connexion et réessayez.');
+  }
+}
+
+function render(d){
+  const ideas=d.ideas||[];
+
+  // IDEAS GRID
+  const grid=document.getElementById('ideasGrid');
+  grid.innerHTML='';
+  ideas.forEach((idea,i)=>{
+    const card=document.createElement('div');
+    card.className='idea-card'+(i===0?' active-idea':'');
+    card.innerHTML=`
+      <div class="idea-number">Idée ${i+1} / ${ideas.length}</div>
+      <div class="idea-title">${esc(idea.title||'')}</div>
+      <div class="idea-desc">${esc(idea.tagline||'')} — ${esc(idea.description||'').slice(0,90)}…</div>
+    `;
+    card.onclick=()=>selectIdea(i, ideas);
+    grid.appendChild(card);
+  });
+
+  // DETAIL
+  buildDetail(ideas);
+
+  // QUALITY
+  // (included in detail section)
+
+  document.getElementById('loader').classList.remove('active');
+  document.getElementById('results').classList.add('active');
+  document.getElementById('genBtn').disabled=false;
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+  selectIdea(0, ideas);
+}
+
+function selectIdea(i, ideas){
+  currentIdea=i;
+  document.querySelectorAll('.idea-card').forEach((c,idx)=>{
+    c.classList.toggle('active-idea',idx===i);
+  });
+  document.querySelectorAll('.idea-detail').forEach((d,idx)=>{
+    d.style.display = idx===i?'block':'none';
+  });
+}
+
+function buildDetail(ideas){
+  const container=document.getElementById('ideasDetail');
+  container.innerHTML='';
+
+  ideas.forEach((idea,i)=>{
+    const div=document.createElement('div');
+    div.className='idea-detail';
+    div.style.display= i===0?'block':'none';
+
+    const tags=(idea.hashtags||[]).map(h=>`<span class="htag">${esc(h)}</span>`).join('');
+    const score=parsedData.quality?.score||88;
+
+    div.innerHTML=`
+      <!-- PROMPT -->
+      <div class="scard">
+        <div class="scard-head">
+          <div class="scard-label">Prompt image IA — Idée ${i+1}</div>
+          <button class="cbtn" onclick="copy(document.getElementById('pr${i}').textContent,this)">Copier</button>
+        </div>
+        <div class="tblock prompt" id="pr${i}">${esc(idea.prompt||'')}</div>
+      </div>
+
+      <!-- LÉGENDES -->
+      <div class="scard">
+        <div class="scard-head">
+          <div class="scard-label">Légendes & Textes</div>
+          <button class="cbtn" id="platcpy${i}" onclick="copyActivePlat(${i},this)">Copier</button>
+        </div>
+        <div class="tabs">
+          <button class="tab on" data-group="p${i}" onclick="switchTab('fb',this,'p${i}',${i})"><span class="platdot" style="background:#1877F2"></span>Facebook</button>
+          <button class="tab" data-group="p${i}" onclick="switchTab('tt',this,'p${i}',${i})"><span class="platdot" style="background:#aaa"></span>TikTok</button>
+          <button class="tab" data-group="p${i}" onclick="switchTab('yt',this,'p${i}',${i})"><span class="platdot" style="background:#FF0000"></span>YouTube</button>
+        </div>
+        <div class="pc on" data-group="p${i}" id="p${i}-fb"><div class="tblock">${esc(idea.facebook||'')}</div></div>
+        <div class="pc" data-group="p${i}" id="p${i}-tt"><div class="tblock">${esc(idea.tiktok||'')}</div></div>
+        <div class="pc" data-group="p${i}" id="p${i}-yt"><div class="tblock">${esc(idea.youtube||'')}</div></div>
+        <hr class="div">
+        <div class="scard-label" style="margin-bottom:12px">Hashtags</div>
+        <div class="hcloud">${tags}</div>
+      </div>
+
+      <!-- VOIX OFF -->
+      <div class="scard">
+        <div class="scard-head">
+          <div class="scard-label">Voix off (30–60 s)</div>
+          <button class="cbtn" onclick="copy(document.getElementById('vo${i}').textContent,this)">Copier</button>
+        </div>
+        <div class="vo-block" id="vo${i}">${esc(idea.voiceover||'')}</div>
+      </div>
+
+      <!-- TIMING + CHARYU -->
+      <div class="scard">
+        <div class="scard-head">
+          <div class="scard-label">Publication & Charyu</div>
+        </div>
+        <div class="timing-pill">🕐 ${esc(idea.timing||'')}</div>
+        <div class="scard-label" style="margin-bottom:10px">Mention naturelle Charyu</div>
+        <div class="charyu-block" id="cy${i}">${esc(idea.charyu_mention||'')}</div>
+      </div>
+
+      ${i===ideas.length-1 ? `
+      <!-- QUALITY (shown after last idea) -->
+      <div class="scard">
+        <div class="scard-head"><div class="scard-label">Vérification qualité globale</div></div>
+        <div class="qrow">
+          <div class="qscore">${score}<small>/100</small></div>
+          <div class="qtext"><strong>Analyse :</strong><br>${esc(parsedData.quality?.analysis||'')}</div>
+        </div>
+        <button class="btn-regen" onclick="run()">↻ Régénérer le plan du jour</button>
+      </div>` : ''}
+    `;
+
+    // Store platform texts for copy
+    div._plat = { fb: idea.facebook||'', tt: idea.tiktok||'', yt: idea.youtube||'' };
+    div._idx = i;
+
+    container.appendChild(div);
+  });
+}
+
+function copyActivePlat(i, btn){
+  const details = document.querySelectorAll('.idea-detail');
+  const div = details[i];
+  // find active tab
+  let plat='fb';
+  div.querySelectorAll('.tab').forEach(t=>{
+    if(t.classList.contains('on')){
+      if(t.textContent.includes('TikTok')) plat='tt';
+      else if(t.textContent.includes('YouTube')) plat='yt';
+    }
+  });
+  const txt = div._plat ? div._plat[plat] : '';
+  navigator.clipboard.writeText(txt).then(()=>{
+    btn.textContent='✓ Copié';btn.classList.add('ok');
+    setTimeout(()=>{btn.textContent='Copier';btn.classList.remove('ok');},1800);
+  });
+}
+
+function esc(s){
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
